@@ -22,7 +22,14 @@ void main() {
 
   //! Baseado na lista acima.
   //! 1 - Remova os pacientes duplicados e apresente a nova lista
-  final semDuplicados = pessoas.toSet().toList();
+  final semDuplicados = pessoas.toSet().map((element) {
+    final dados = element.split('|');
+    return {
+      'nome': dados[0],
+      'idade': int.parse(dados[1]),
+      'sexo': dados[2],
+    };
+  }).toList();
   final pessoasUnicas = pessoasUnicasPorNome(semDuplicados);
 
   print('Pessoas únicas:');
@@ -55,23 +62,19 @@ void main() {
   print('\nPessoa mais velha: ${pessoaMaisVelha(semDuplicados)}');
 }
 
-List<String> pessoasUnicasPorNome(List<String> pessoas) {
-  return pessoas.map((e) {
-    final dados = e.split('|');
-    return dados[0];
-  }).toList();
+List<String> pessoasUnicasPorNome(List<dynamic> pessoas) {
+  return pessoas.map<String>((pessoa) => pessoa['nome']).toList();
 }
 
-Map<String, dynamic> pessoasPorSexo(List<String> pessoas) {
+Map<String, dynamic> pessoasPorSexo(List<dynamic> pessoas) {
   var masculino = [];
   var feminino = [];
 
   for (final pessoa in pessoas) {
-    final dados = pessoa.split('|');
-    if (dados[2] == 'Masculino') {
-      masculino.add(dados[0]);
+    if (pessoa['sexo'] == 'Masculino') {
+      masculino.add(pessoa['nome']);
     } else {
-      feminino.add(dados[0]);
+      feminino.add(pessoa['nome']);
     }
   }
 
@@ -85,28 +88,24 @@ Map<String, dynamic> pessoasPorSexo(List<String> pessoas) {
   return pessoasPorSexo;
 }
 
-List<String> pessoasPorIdade(List<String> pessoas) {
-  return pessoas.fold([], (previousValue, element) {
-    final dados = element.split('|');
-    if (int.parse(dados[1]) > 18) {
-      return [...previousValue, dados[0]];
+List<String> pessoasPorIdade(List<dynamic> pessoas) {
+  return pessoas.fold([], (previousValue, pessoa) {
+    if (pessoa['idade'] > 18) {
+      return [...previousValue, pessoa['nome']];
     }
 
     return previousValue;
   });
 }
 
-String pessoaMaisVelha(List<String> pessoas) {
+String pessoaMaisVelha(List<dynamic> pessoas) {
   int? primeiro;
   String? pessoaSelecionada;
 
   for (final pessoa in pessoas) {
-    final dados = pessoa.split('|');
-    final idade = int.parse(dados[1]);
-
-    if (primeiro == null || idade > primeiro) {
-      primeiro = idade;
-      pessoaSelecionada = dados[0];
+    if (primeiro == null || pessoa['idade'] > primeiro) {
+      primeiro = pessoa['idade'];
+      pessoaSelecionada = pessoa['nome'];
     }
   }
   
